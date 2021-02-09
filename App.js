@@ -1,21 +1,75 @@
+// react imports
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, FlatList, TouchableHighlight} from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+// screens imports
+import Settings from './components/Settings'
+import Home from './components/Home'
+import Students from './components/Students'
+import Images from './components/Images'
+
+// icons
+import Ionicons from "react-native-vector-icons/Ionicons";
+
+// redux imports
+import { useSelector, useDispatch, Provider } from "react-redux";
+import store from './redux/configureStore'
+import { signInAction } from "./redux/ducks/blogAuth";
+
+const Tab = createBottomTabNavigator();
+
+export default function AppWrapper() {
+	return (
+		<Provider store={store}>
+			<App />
+		</Provider>
+	)
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+function App() {
+
+  const dispatch = useDispatch();
+  const signedIn = useSelector((state) => state.auth.signedIn);
+
+  return (
+	<NavigationContainer>
+		<Tab.Navigator
+			screenOptions={({ route }) => ({
+			tabBarIcon: ({ focused, color, size }) => {
+				let iconName;
+				if (route.name === 'Home') {
+					iconName = focused
+					? 'ios-information-circle'
+					: 'ios-information-circle-outline';
+				} else if (route.name === 'Settings') {
+					iconName = focused ? 'ios-list-box' : 'ios-list';
+				} else if ( route.name === 'Students' ) {
+					iconName = focused ? 'people-circle' : 'people-circle-outline'
+				} else if ( route.name === 'Images') {
+					iconName = focused ? 'image': 'image-outline'
+				}
+
+				// You can return any component that you like here!
+				return <Ionicons name={iconName} size={size} color={color} />;
+				},
+			})}
+			tabBarOptions={{
+				activeTintColor: 'tomato',
+				inactiveTintColor: 'gray',
+			}}
+        >
+			<Tab.Screen name="Home" component={Home} />
+			<Tab.Screen name="Settings" component={Settings} />
+			<Tab.Screen name="Students" component={Students} />
+			<Tab.Screen name="Images" component={Images} />
+	  	</Tab.Navigator>
+	</NavigationContainer>
+  )
+}
+
+
+
