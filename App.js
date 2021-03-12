@@ -9,8 +9,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 // screens imports
 import Settings from './components/Settings'
 import Home from './components/Home'
-import Students from './components/Students'
 import Images from './components/Images'
+import Students from './components/Students'
 
 // icons
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -63,9 +63,9 @@ function App() {
 			}}
         >
 			<Tab.Screen name="Home" component={Home} />
+			<Tab.Screen name="Images" component={Images} />
 			<Tab.Screen name="Settings" component={Settings} />
 			<Tab.Screen name="Students" component={Students} />
-			<Tab.Screen name="Images" component={Images} />
 	  	</Tab.Navigator>
 	</NavigationContainer>
   )

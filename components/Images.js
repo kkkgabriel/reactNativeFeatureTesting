@@ -15,6 +15,7 @@ import {
   Platform,
   Button,
   Pressable,
+  ScrollView
 } from "react-native";
 
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -26,7 +27,7 @@ export default function App() {
 	const CONTACTS_KEY = 'contacts';
 
 	// store text inputs
-	const [number, setNumber] = useState();
+	const [key, setKey] = useState();
 	const [name, setName] = useState();
 	const [imageUri, setImageUri] = useState(null);
 
@@ -38,30 +39,30 @@ export default function App() {
 	const emergencyNumbers = [
 	{
 		name: "Police",
-		number: "97830000",
+		key: "97830000",
 		imageURL:
 		"https://cdn1.vectorstock.com/i/1000x1000/94/60/policeman-in-uniform-vector-4409460.jpg",
 	},
 	{
 		name: "SOS",
-		number: "18002214444",
+		key: "18002214444",
 		imageURL:
 		"https://uploads-ssl.webflow.com/5a4c78412b69220001d82c7d/5a4c78412b69220001d82d29_3.svg",
 	},
 	{
 		name: "Ambulance",
-		number: "995",
+		key: "995",
 		imageURL:
 		"https://p1.hiclipart.com/preview/563/664/55/ambulance-cartoon-emergency-telephone-number-emergency-service-emergency-call-box-first-aid-health-certified-first-responder-vehicle-png-clipart.jpg",
 	}];
 
 	// function to render image from array 
 	const renderImage = (array) =>
-		array.map(({ name, number, imageURL }) => {
+		array.map(({ name, key, imageURL }) => {
 			return (
 				<TouchableOpacity
-					key={number}
-					onPress={() => Linking.openURL(`tel: ${number}`)}
+					key={key}
+					onPress={() => Linking.openURL(`tel: ${key}`)}
 				>
 					<Text style={{ fontSize: 20, color: "blue" }}>{name}</Text>
 					<Image
@@ -76,7 +77,7 @@ export default function App() {
 	const addContact = () => {
 		const contact =     {
 			name: name,
-			number: number,
+			key: key,
 			imageURL: imageUri, 
 		}
 		AsyncStorage.setItem(CONTACTS_KEY, JSON.stringify([...contacts, contact]))
@@ -101,7 +102,7 @@ export default function App() {
 	// function to clear all inputs
 	const clear = () => {
 		setName('')
-		setNumber('')
+		setKey('')
 		setImageUri('')
 	}
 
@@ -135,78 +136,78 @@ export default function App() {
 
 	return (
 		<View style={styles.container}>
-			<Modal
-				animationType="slide"
-				transparent={true}
-				visible={modalVisible}
-				onRequestClose={() => {
-					Alert.alert("Modal has been closed.");
-					setModalVisible(!modalVisible);
-				}}
-			>
-				<View style={styles.centeredView}>
-					<View style={styles.modalView}>
+			<ScrollView >
+				<Modal
+					animationType="slide"
+					transparent={true}
+					visible={modalVisible}
+					onRequestClose={() => {
+						Alert.alert("Modal has been closed.");
+						setModalVisible(!modalVisible);
+					}}
+				>
+					<View style={styles.centeredView}>
+						<View style={styles.modalView}>
 
-					<TouchableOpacity
-						style={[styles.buttonClose]}
-						onPress={() => { setModalVisible(!modalVisible)}}
-					>
-						<Text style={styles.textStyle}>x</Text>
-					</TouchableOpacity>
+						<TouchableOpacity
+							style={[styles.buttonClose]}
+							onPress={() => { setModalVisible(!modalVisible)}}
+						>
+							<Text style={styles.textStyle}>x</Text>
+						</TouchableOpacity>
 
-					<TouchableOpacity
-						style={[styles.button, styles.cusButtons]}
-						onPress={() => { openImageSelector(), setModalVisible(!modalVisible)}}
-					>
-						<Text style={styles.textStyle}>Select image from gallery</Text>
-					</TouchableOpacity>
+						<TouchableOpacity
+							style={[styles.button, styles.cusButtons]}
+							onPress={() => { openImageSelector(), setModalVisible(!modalVisible)}}
+						>
+							<Text style={styles.textStyle}>Select image from gallery</Text>
+						</TouchableOpacity>
 
-					<TouchableOpacity
-						style={[styles.button, styles.cusButtons]}
-						onPress={() => { openCamera(), setModalVisible(!modalVisible)}}
-					>
-						<Text style={styles.textStyle}>Open camera</Text>
-					</TouchableOpacity>
+						<TouchableOpacity
+							style={[styles.button, styles.cusButtons]}
+							onPress={() => { openCamera(), setModalVisible(!modalVisible)}}
+						>
+							<Text style={styles.textStyle}>Open camera</Text>
+						</TouchableOpacity>
+						</View>
 					</View>
+				</Modal>
+
+				<Text
+					style={{ fontSize: 24, fontWeight: "bold", padding: 30, color: "red" }}
+				>
+					SENIOR FRIEND APP
+				</Text>
+				<StatusBar style="auto" />
+
+				{renderImage(contacts)}
+
+				<View style={styles.emergencyNumbers}>
+					{renderImage(emergencyNumbers)}
 				</View>
-			</Modal>
 
-			<Text
-				style={{ fontSize: 24, fontWeight: "bold", padding: 30, color: "red" }}
-			>
-				SENIOR FRIEND APP
-			</Text>
-			<StatusBar style="auto" />
+				<TextInput
+					style={{ height: 20, borderColor: "red", borderWith: 2 }}
+					placeholder="Add name" // Initial display on text input box
+					style={{ color: "blue", fontWeight: "bold" }}
+					onChangeText={(input) => setName(input)} //This will set the text input
+				></TextInput>
 
-			{renderImage(contacts)}
+				<TextInput
+					style={{ height: 20, borderColor: "red", borderWith: 2 }}
+					placeholder="Add number" // Initial display on text input box
+					style={{ fontWeight: "bold", color: "blue" }}
+					onChangeText={(input) => setKey(input)} //This will set the text input
+				></TextInput>
 
-			<View style={styles.emergencyNumbers}>
-				{renderImage(emergencyNumbers)}
-			</View>
+				<TouchableOpacity style={styles.submitButtonAdd} onPress={addContact}>
+					<Text style={styles.buttonText}>Add!</Text>
+				</TouchableOpacity>
 
-			<TextInput
-				style={{ height: 20, borderColor: "red", borderWith: 2 }}
-				placeholder="Add name" // Initial display on text input box
-				style={{ color: "blue", fontWeight: "bold" }}
-				value={name}
-				onChangeText={(input) => setName(input)} //This will set the text input
-			></TextInput>
-
-			<TextInput
-				style={{ height: 20, borderColor: "red", borderWith: 2 }}
-				placeholder="Add number" // Initial display on text input box
-				style={{ fontWeight: "bold", color: "blue" }}
-				value={number}
-				onChangeText={(input) => setNumber(input)} //This will set the text input
-			></TextInput>
-
-			<TouchableOpacity style={styles.submitButtonAdd} onPress={addContact}>
-				<Text style={styles.buttonText}>Add!</Text>
-			</TouchableOpacity>
-
-			<TouchableOpacity style={styles.submitButtonUpload} onPress={() => setModalVisible(true)}>
-				<Text style={styles.buttonText}>Upload image</Text>
-			</TouchableOpacity>
+				<TouchableOpacity style={styles.submitButtonUpload} onPress={() => setModalVisible(true)}>
+					<Text style={styles.buttonText}>Upload image</Text>
+				</TouchableOpacity>
+			</ScrollView>
 		</View>
 	);
 }
@@ -289,3 +290,4 @@ const styles = StyleSheet.create({
 		textAlign: "center"
 	}
 });
+
